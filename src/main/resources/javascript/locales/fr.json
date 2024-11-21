@@ -1,0 +1,13 @@
+{
+  "label": {
+    "buttonAction": "Exporter en CSV",
+    "header": "Exporter le contenu en CSV - Site {{siteInfo}}",
+    "exportToCSV": "Exporter en CSV",
+    "selectContentType": "Sélectionnez un type de contenu à exporter",
+    "selectProperties": "Sélectionnez les propriétés à ajouter au fichier CSV",
+    "loadingContentTypes": "Chargement ...",
+    "noProperties": "Sélectionnez un type de contenu pour afficher les propriétés",
+    "selectPlaceholder": "Sélectionner ...",
+    "exporting": "Exportation en cours ..."
+  }
+}
