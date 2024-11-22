@@ -39,15 +39,19 @@ Activate the module on the desired site.
 
 After deploying and activating the module, you will find a new entry in the Extensions menu of Jahia’s back-office.
 
-2. Select Content Type
+2. Specify the CSV file separator
+
+Enter the desired CSV separator
+
+3. Select Content Type
 
 From the dropdown menu, select the content type you want to export.
 
-3. Select Properties
+4. Select Properties
 
 Choose the properties of the content type you want to include in the CSV export.
 
-4. Export to CSV
+5. Export to CSV
 
 Click the Export to CSV button to generate the CSV file. The generated file will include:
 - A header with the selected properties.
