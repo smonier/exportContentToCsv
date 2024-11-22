@@ -57,7 +57,7 @@ export default () => {
 
     const handleContentTypeChange = selectedType => {
         setSelectedContentType(selectedType);
-        fetchProperties({variables: {type: selectedType}});
+        fetchProperties({variables: {type: selectedType, language}});
     };
 
     const handlePropertyToggle = propertyName => {
@@ -129,18 +129,6 @@ export default () => {
             />
             <div className={styles.container}>
                 <div className={styles.leftPanel}>
-                    <div className={styles.separatorInput}>
-                        <Typography variant="heading" className={styles.heading}>
-                            {t('label.separator')}
-                        </Typography>
-                        <input
-                            type="text"
-                            value={csvSeparator}
-                            placeholder={t('label.separatorPlaceholder')}
-                            className={styles.customInput}
-                            onChange={e => setCsvSeparator(e.target.value)}
-                        />
-                    </div>
                     <Typography variant="heading" className={styles.heading}>
                         {t('label.selectContentType')}
                     </Typography>
@@ -153,6 +141,24 @@ export default () => {
                         placeholder={t('label.selectPlaceholder')}
                         onChange={(e, item) => handleContentTypeChange(item.value)}
                     />
+                    <div className={styles.separatorInput}>
+                        <Typography variant="heading" className={styles.heading}>
+                            {t('label.separator')}
+                        </Typography>
+                        <Dropdown
+                            data={[
+                                {label: ';', value: ';'},
+                                {label: ',', value: ','},
+                                {label: '#', value: '#'},
+                                {label: '|', value: '|'},
+                                {label: '/', value: '/'}
+                            ]}
+                            value={csvSeparator}
+                            placeholder={t('label.separatorPlaceholder')}
+                            className={styles.customDropdown}
+                            onChange={(e, item) => setCsvSeparator(item.value)}
+                        />
+                    </div>
                 </div>
 
                 <div className={styles.rightPanel}>
@@ -163,17 +169,20 @@ export default () => {
                         {propertiesLoading ? (
                             <div>{t('label.loadingProperties')}</div>
                         ) : properties.length > 0 ? (
-                            properties.map(property => (
-                                <div key={property.name} className={styles.propertyItem}>
-                                    <input
-                                        type="checkbox"
-                                        id={property.name}
-                                        checked={selectedProperties.includes(property.name)}
-                                        onChange={() => handlePropertyToggle(property.name)}
-                                    />
-                                    <label htmlFor={property.name}>{property.name}</label>
-                                </div>
-                            ))
+                            properties
+                                .slice() // Create a shallow copy to avoid mutating the original array
+                                .sort((a, b) => a.displayName.localeCompare(b.displayName)) // Sort by displayName
+                                .map(property => (
+                                    <div key={property.name} className={styles.propertyItem}>
+                                        <input
+                                            type="checkbox"
+                                            id={property.name}
+                                            checked={selectedProperties.includes(property.name)}
+                                            onChange={() => handlePropertyToggle(property.name)}
+                                        />
+                                        <label htmlFor={property.name}>{property.displayName}</label>
+                                    </div>
+                                ))
                         ) : (
                             <div>{t('label.noProperties')}</div>
                         )}

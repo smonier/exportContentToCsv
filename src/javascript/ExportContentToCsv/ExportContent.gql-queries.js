@@ -15,13 +15,14 @@ export const GetContentTypeQuery = gql`
 `;
 
 export const GetContentPropertiesQuery = gql`
-    query GetContentPropertiesQuery($type: String!) {
+    query GetContentPropertiesQuery($type: String!, $language: String!) {
         jcr {
             nodeTypes(filter: {includeTypes: [$type]}) {
                 nodes {
-                    properties (fieldFilter: {filters: [{fieldName: "hidden", value: "false"}]}) {
+                    properties(fieldFilter: {filters: [{fieldName: "hidden", value: "false"}]}) {
                         name
                         hidden
+                        displayName(language: $language)
                     }
                 }
             }
