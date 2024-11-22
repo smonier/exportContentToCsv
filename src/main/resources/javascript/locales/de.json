@@ -10,6 +10,7 @@
     "selectPlaceholder": "Auswählen ...",
     "exporting": "Export läuft ...",
     "separator": "Geben Sie den Separator für die CSV-Datei an",
-    "separatorPlaceholder": ";"
+    "separatorPlaceholder": ";",
+    "selectAll": "Alle Eigenschaften auswählen"
   }
 }

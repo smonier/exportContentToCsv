@@ -169,20 +169,43 @@ export default () => {
                         {propertiesLoading ? (
                             <div>{t('label.loadingProperties')}</div>
                         ) : properties.length > 0 ? (
-                            properties
-                                .slice() // Create a shallow copy to avoid mutating the original array
-                                .sort((a, b) => a.displayName.localeCompare(b.displayName)) // Sort by displayName
-                                .map(property => (
-                                    <div key={property.name} className={styles.propertyItem}>
-                                        <input
-                                            type="checkbox"
-                                            id={property.name}
-                                            checked={selectedProperties.includes(property.name)}
-                                            onChange={() => handlePropertyToggle(property.name)}
-                                        />
-                                        <label htmlFor={property.name}>{property.displayName}</label>
-                                    </div>
-                                ))
+                            <>
+                                {/* Select All Checkbox */}
+                                <div className={styles.propertyItem}>
+                                    <input
+                                        type="checkbox"
+                                        id="selectAll"
+                                        checked={selectedProperties.length === properties.length}
+                                        onChange={() => {
+                                            if (selectedProperties.length === properties.length) {
+                                                // Deselect all
+                                                setSelectedProperties([]);
+                                            } else {
+                                                // Select all
+                                                setSelectedProperties(properties.map(property => property.name));
+                                            }
+                                        }}
+                                    />
+                                    <label htmlFor="selectAll">{t('label.selectAll')}</label>
+                                </div>
+                                <hr className={styles.separatorLine}/>
+
+                                {/* Render Sorted Properties */}
+                                {properties
+                                    .slice() // Create a shallow copy to avoid mutating the original array
+                                    .sort((a, b) => a.displayName.localeCompare(b.displayName)) // Sort by displayName
+                                    .map(property => (
+                                        <div key={property.name} className={styles.propertyItem}>
+                                            <input
+                                                type="checkbox"
+                                                id={property.name}
+                                                checked={selectedProperties.includes(property.name)}
+                                                onChange={() => handlePropertyToggle(property.name)}
+                                            />
+                                            <label htmlFor={property.name}>{property.displayName}</label>
+                                        </div>
+                                    ))}
+                            </>
                         ) : (
                             <div>{t('label.noProperties')}</div>
                         )}

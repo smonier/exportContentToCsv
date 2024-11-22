@@ -112,3 +112,10 @@ $font-family: 'Roboto', sans-serif;
     border-color: #999999; /* Optional: Adds focus effect similar to dropdown */
     box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
 }
+
+.separatorLine {
+    border: 0;
+    height: 1px;
+    background-color: #cccccc; /* Light gray color for the line */
+    margin: 8px 0; /* Space around the line */
+}
