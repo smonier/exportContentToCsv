@@ -67,14 +67,13 @@ export function getI18nFieldAndValues(formAndData) {
         });
 }
 
-export const exportCSVFile = (data, filename, headers) => {
+export const exportCSVFile = (data, filename, headers, csvSeparator) => {
     // Construct the CSV header row
-    const csvHeaderRow = headers.join(',');
+    const csvHeaderRow = headers.join(csvSeparator);
 
     // Map the data to CSV rows
     const csvRows = data.map(row =>
-        headers.map(header => `"${row[header] || ''}"`).join(',')
-    );
+        headers.map(header => `"${String(row[header] || '').replace(/"/g, '""')}"`).join(csvSeparator));
 
     // Combine headers and rows
     const csvContent = [csvHeaderRow, ...csvRows].join('\n');

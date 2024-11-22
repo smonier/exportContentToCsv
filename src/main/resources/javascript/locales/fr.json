@@ -8,6 +8,8 @@
     "loadingContentTypes": "Chargement ...",
     "noProperties": "Sélectionnez un type de contenu pour afficher les propriétés",
     "selectPlaceholder": "Sélectionner ...",
-    "exporting": "Exportation en cours ..."
+    "exporting": "Exportation en cours ...",
+    "separator": "Préciser le séparateur pour le fichier csv",
+    "separatorPlaceholder": ";"
   }
 }

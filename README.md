@@ -95,15 +95,16 @@ query SiteContentTypesQuery($siteKey: String!, $language: String!) {
 #### Fetch Properties for a Content Type
    ```bash
 query GetContentPropertiesQuery($type: String!) {
-    jcr {
-        nodeTypes(filter: {includeTypes: [$type]}) {
-            nodes {
-                properties {
-                    name
-                }
-            }
+  jcr {
+    nodeTypes(filter: {includeTypes: [$type]}) {
+      nodes {
+        properties (fieldFilter: {filters: [{fieldName: "hidden", value: "false"}]}) {
+          name
+          hidden
         }
+      }
     }
+  }
 }
    ```
 #### Fetch Content for CSV

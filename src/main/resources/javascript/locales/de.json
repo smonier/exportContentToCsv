@@ -1,0 +1,15 @@
+{
+  "label": {
+    "buttonAction": "Als CSV exportieren",
+    "header": "Inhalt als CSV exportieren - Seite {{siteInfo}}",
+    "exportToCSV": "Als CSV exportieren",
+    "selectContentType": "Wählen Sie einen Inhaltstyp zum Exportieren aus",
+    "selectProperties": "Wählen Sie die Eigenschaften aus, die zur CSV-Datei hinzugefügt werden sollen",
+    "loadingContentTypes": "Laden ...",
+    "noProperties": "Wählen Sie einen Inhaltstyp, um die Eigenschaften anzuzeigen",
+    "selectPlaceholder": "Auswählen ...",
+    "exporting": "Export läuft ...",
+    "separator": "Geben Sie den Separator für die CSV-Datei an",
+    "separatorPlaceholder": ";"
+  }
+}

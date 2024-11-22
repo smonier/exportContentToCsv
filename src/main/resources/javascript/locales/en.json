@@ -8,6 +8,8 @@
     "loadingContentTypes": "Loading ...",
     "noProperties": "Select a Content Type to display the properties",
     "selectPlaceholder": "Select ...",
-    "exporting": "Exporting ..."
+    "exporting": "Exporting ...",
+    "separator": "Specify the CSV file separator",
+    "separatorPlaceholder": ";"
   }
 }

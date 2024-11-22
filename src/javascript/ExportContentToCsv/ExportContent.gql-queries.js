@@ -19,8 +19,9 @@ export const GetContentPropertiesQuery = gql`
         jcr {
             nodeTypes(filter: {includeTypes: [$type]}) {
                 nodes {
-                    properties {
+                    properties (fieldFilter: {filters: [{fieldName: "hidden", value: "false"}]}) {
                         name
+                        hidden
                     }
                 }
             }

@@ -14,6 +14,7 @@ export default () => {
     const [contentTypes, setContentTypes] = useState([]);
     const [properties, setProperties] = useState([]);
     const [isExporting, setIsExporting] = useState(false);
+    const [csvSeparator, setCsvSeparator] = useState(','); // State for the CSV separator
 
     const siteKey = window.contextJsParameters.siteKey;
     const language = window.contextJsParameters.language;
@@ -74,14 +75,13 @@ export default () => {
                 path: sitePath,
                 language,
                 type: selectedContentType,
-                workspace: workspace, // You can change this to 'LIVE' if needed
-                properties: selectedProperties // Pass selected properties
+                workspace: workspace,
+                properties: selectedProperties
             }
         })
             .then(response => {
                 const descendants = response.data.jcr.result.descendants.nodes;
 
-                // Extract selected properties and include them in the header
                 const extractedData = descendants.map(node => {
                     const nodeData = {};
                     selectedProperties.forEach(property => {
@@ -91,17 +91,19 @@ export default () => {
                     return nodeData;
                 });
 
-                // Generate CSV headers based on selected properties
                 const csvHeaders = selectedProperties;
+                // Generate dynamic filename with content type and timestamp
+                const timestamp = new Date().toISOString().replace(/[:.-]/g, '_'); // Format the timestamp
+                const filename = `${selectedContentType}_${timestamp}`; // Example: Article_2024_11_22T10_30_45
 
                 // Trigger CSV download
-                exportCSVFile(extractedData, 'exported_content', csvHeaders);
+                exportCSVFile(extractedData, filename, csvHeaders, csvSeparator);
             })
             .catch(err => {
                 console.error('Error fetching content for CSV:', err);
             })
             .finally(() => {
-                setIsExporting(false); // Reset exporting state
+                setIsExporting(false);
             });
     };
 
@@ -127,6 +129,18 @@ export default () => {
             />
             <div className={styles.container}>
                 <div className={styles.leftPanel}>
+                    <div className={styles.separatorInput}>
+                        <Typography variant="heading" className={styles.heading}>
+                            {t('label.separator')}
+                        </Typography>
+                        <input
+                            type="text"
+                            value={csvSeparator}
+                            placeholder={t('label.separatorPlaceholder')}
+                            className={styles.customInput}
+                            onChange={e => setCsvSeparator(e.target.value)}
+                        />
+                    </div>
                     <Typography variant="heading" className={styles.heading}>
                         {t('label.selectContentType')}
                     </Typography>
@@ -166,6 +180,7 @@ export default () => {
                     </div>
                 </div>
             </div>
+
         </>
     );
 };
