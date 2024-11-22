@@ -17,7 +17,7 @@ export default () => {
     const [csvSeparator, setCsvSeparator] = useState(','); // State for the CSV separator
 
     const siteKey = window.contextJsParameters.siteKey;
-    const language = window.contextJsParameters.language;
+    const language = window.contextJsParameters.uilang;
     const sitePath = '/sites/' + siteKey;
     const workspace = window.contextJsParameters.workspace === 'default' ? 'EDIT' : 'LIVE';
 
