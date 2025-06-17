@@ -35,7 +35,7 @@ export default () => {
     });
 
     // Fetch content based on the selected type and properties
-    const [fetchContent] = useLazyQuery(FetchContentForExportQuery, {
+    const [fetchContentForExport] = useLazyQuery(FetchContentForExportQuery, {
         fetchPolicy: 'network-only'
     });
 
@@ -98,19 +98,20 @@ export default () => {
         const timestamp = new Date().toISOString().replace(/[:.-]/g, '_');
         const filename = `${selectedContentType}_${timestamp}`;
 
-        if (exportFormat === 'csv') {
-            fetchContent({
-                variables: {
-                    path: sitePath,
-                    language,
-                    type: selectedContentType,
-                    workspace: workspace,
-                    properties: selectedProperties
-                }
-            })
-                .then(response => {
-                    const descendants = response.data.jcr.result.descendants.nodes;
+        fetchContentForExport({
+            variables: {
+                path: sitePath,
+                language,
+                type: selectedContentType,
+                workspace: workspace,
+                properties: exportFormat === 'csv' ? selectedProperties : null
+            }
+        })
+            .then(response => {
+                const rootNode = response.data.jcr.result;
+                const descendants = rootNode.descendants.nodes;
 
+                if (exportFormat === 'csv') {
                     const extractedData = descendants.map(node => {
                         const nodeData = {
                             uuid: node.uuid,
@@ -119,6 +120,7 @@ export default () => {
                             primaryNodeType: node.primaryNodeType?.name,
                             displayName: node.displayName
                         };
+
                         selectedProperties.forEach(property => {
                             const prop = node.properties.find(p => p.name === property);
                             if (prop) {
@@ -139,39 +141,19 @@ export default () => {
 
                     exportCSVFile(extractedData, filename, csvHeaders, csvSeparator);
                     notify('success', `${filename}.csv`);
-                })
-                .catch(err => {
-                    log.error('Error fetching content for CSV:', err);
-                    notify('error', `${filename}.csv`);
-                })
-                .finally(() => {
-                    setIsExporting(false);
-                });
-        } else {
-            fetchContent({
-                variables: {
-                    path: sitePath,
-                    language,
-                    type: selectedContentType,
-                    workspace: workspace,
-                    properties: null
-                }
-            })
-                .then(response => {
-                    const rootNode = response.data.jcr.result;
-                    const descendants = rootNode.descendants.nodes;
+                } else {
                     const tree = buildTree(rootNode, descendants);
                     exportJSONFile(tree, filename);
                     notify('success', `${filename}.json`);
-                })
-                .catch(err => {
-                    log.error('Error fetching content for JSON:', err);
-                    notify('error', `${filename}.json`);
-                })
-                .finally(() => {
-                    setIsExporting(false);
-                });
-        }
+                }
+            })
+            .catch(err => {
+                log.error('Error fetching content for export:', err);
+                notify('error', `${filename}.${exportFormat}`);
+            })
+            .finally(() => {
+                setIsExporting(false);
+            });
     };
 
     if (contentTypeLoading) {
