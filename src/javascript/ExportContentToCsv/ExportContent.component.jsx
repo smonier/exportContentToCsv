@@ -223,15 +223,17 @@ export default () => {
     return (
         <>
             <Dialog
-                isOpen={isPreviewOpen}
-                title={t('label.previewTitle')}
-                actions={[
-                    {label: t('label.previewCancel'), onClick: cancelPreview},
-                    {label: t('label.previewDownload'), color: 'accent', onClick: confirmDownload}
-                ]}
+                open={isPreviewOpen}
                 onClose={cancelPreview}
             >
-                <pre style={{maxHeight: '400px', overflow: 'auto'}}>{previewData}</pre>
+                <DialogTitle>{t('label.previewTitle')}</DialogTitle>
+                <DialogContent>
+                    <pre style={{maxHeight: '400px', overflow: 'auto'}}>{previewData}</pre>
+                </DialogContent>
+                <DialogActions>
+                    <Button label={t('label.previewCancel')} onClick={cancelPreview}/>
+                    <Button label={t('label.previewDownload')} color="accent" onClick={confirmDownload}/>
+                </DialogActions>
             </Dialog>
             <Header
                 title={t('label.header', {siteInfo: siteKey})}
