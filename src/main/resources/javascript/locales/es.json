@@ -11,6 +11,10 @@
     "exporting": "Exportando ...",
     "separator": "Especifique el separador para el archivo CSV",
     "separatorPlaceholder": ";",
-    "selectAll": "Seleccionar todas las propiedades"
+    "selectAll": "Seleccionar todas las propiedades",
+    "exportToJSON": "Exportar a JSON",
+    "exportFormat": "Formato de exportación",
+    "exportSuccess": "Exportado {{filename}}",
+    "exportError": "Error exportando {{filename}}"
   }
 }

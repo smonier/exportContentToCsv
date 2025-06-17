@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {useLazyQuery} from '@apollo/client';
-import {GetContentTypeQuery, GetContentPropertiesQuery, FetchContentForCSVQuery} from '~/gql-queries/ExportContent.gql-queries';
+import {GetContentTypeQuery, GetContentPropertiesQuery, FetchContentForCSVQuery, FetchContentForJSONQuery} from '~/gql-queries/ExportContent.gql-queries';
 import {Button, Header, Dropdown, Typography} from '@jahia/moonstone';
 import styles from './ExportContent.component.scss';
 import {useTranslation} from 'react-i18next';
-import {exportCSVFile} from './ExportContent.utils';
+import {exportCSVFile, exportJSONFile} from './ExportContent.utils';
 import {extractAndFormatContentTypeData} from '~/ExportContentToCsv/ExportContent.utils';
 import log from '~/log';
 
@@ -16,6 +16,7 @@ export default () => {
     const [properties, setProperties] = useState([]);
     const [isExporting, setIsExporting] = useState(false);
     const [csvSeparator, setCsvSeparator] = useState(','); // State for the CSV separator
+    const [exportFormat, setExportFormat] = useState('csv');
 
     const siteKey = window.contextJsParameters.siteKey;
     const language = window.contextJsParameters.uilang;
@@ -35,6 +36,9 @@ export default () => {
 
     // Fetch content based on the selected type and properties
     const [fetchContentForCSV] = useLazyQuery(FetchContentForCSVQuery, {
+        fetchPolicy: 'network-only'
+    });
+    const [fetchContentForJSON] = useLazyQuery(FetchContentForJSONQuery, {
         fetchPolicy: 'network-only'
     });
 
@@ -70,49 +74,96 @@ export default () => {
         );
     };
 
+    const notify = (type, message) => {
+        if (window?.jahia?.ui?.notify) {
+            window.jahia.ui.notify(type, null, message);
+        } else {
+            alert(message);
+        }
+    };
+
+    const buildTree = (rootNode, nodes) => {
+        const map = {};
+        [...nodes, rootNode].forEach(n => {
+            map[n.path] = {...n, children: []};
+        });
+        Object.values(map).forEach(n => {
+            const parentPath = n.path.substring(0, n.path.lastIndexOf('/'));
+            if (map[parentPath] && parentPath !== n.path) {
+                map[parentPath].children.push(n);
+            }
+        });
+        return map[rootNode.path];
+    };
+
     const handleExport = () => {
         setIsExporting(true);
-        fetchContentForCSV({
-            variables: {
-                path: sitePath,
-                language,
-                type: selectedContentType,
-                workspace: workspace,
-                properties: selectedProperties
-            }
-        })
-            .then(response => {
-                const descendants = response.data.jcr.result.descendants.nodes;
+        const timestamp = new Date().toISOString().replace(/[:.-]/g, '_');
+        const filename = `${selectedContentType}_${timestamp}`;
 
-                const extractedData = descendants.map(node => {
-                    const nodeData = {
-                        uuid: node.uuid,
-                        path: node.path,
-                        name: node.name,
-                        primaryNodeType: node.primaryNodeType?.name,
-                        displayName: node.displayName
-                    };
-                    selectedProperties.forEach(property => {
-                        const prop = node.properties.find(p => p.name === property);
-                        nodeData[property] = prop ? prop.value : null;
+        if (exportFormat === 'csv') {
+            fetchContentForCSV({
+                variables: {
+                    path: sitePath,
+                    language,
+                    type: selectedContentType,
+                    workspace: workspace,
+                    properties: selectedProperties
+                }
+            })
+                .then(response => {
+                    const descendants = response.data.jcr.result.descendants.nodes;
+
+                    const extractedData = descendants.map(node => {
+                        const nodeData = {
+                            uuid: node.uuid,
+                            path: node.path,
+                            name: node.name,
+                            primaryNodeType: node.primaryNodeType?.name,
+                            displayName: node.displayName
+                        };
+                        selectedProperties.forEach(property => {
+                            const prop = node.properties.find(p => p.name === property);
+                            nodeData[property] = prop ? prop.value : null;
+                        });
+                        return nodeData;
                     });
-                    return nodeData;
+
+                    const csvHeaders = ['uuid', 'path', 'name', 'primaryNodeType', 'displayName', ...selectedProperties];
+
+                    exportCSVFile(extractedData, filename, csvHeaders, csvSeparator);
+                    notify('success', `${filename}.csv`);
+                })
+                .catch(err => {
+                    log.error('Error fetching content for CSV:', err);
+                    notify('error', `${filename}.csv`);
+                })
+                .finally(() => {
+                    setIsExporting(false);
                 });
-
-                const csvHeaders = ['uuid', 'path', 'name', 'primaryNodeType', 'displayName', ...selectedProperties];
-                // Generate dynamic filename with content type and timestamp
-                const timestamp = new Date().toISOString().replace(/[:.-]/g, '_'); // Format the timestamp
-                const filename = `${selectedContentType}_${timestamp}`; // Example: Article_2024_11_22T10_30_45
-
-                // Trigger CSV download
-                exportCSVFile(extractedData, filename, csvHeaders, csvSeparator);
+        } else {
+            fetchContentForJSON({
+                variables: {
+                    path: sitePath,
+                    language,
+                    workspace: workspace
+                }
             })
-            .catch(err => {
-                log.error('Error fetching content for CSV:', err);
-            })
-            .finally(() => {
-                setIsExporting(false);
-            });
+                .then(response => {
+                    const rootNode = response.data.jcr.result;
+                    const descendants = rootNode.descendants.nodes;
+                    const tree = buildTree(rootNode, descendants);
+                    exportJSONFile(tree, filename);
+                    notify('success', `${filename}.json`);
+                })
+                .catch(err => {
+                    log.error('Error fetching content for JSON:', err);
+                    notify('error', `${filename}.json`);
+                })
+                .finally(() => {
+                    setIsExporting(false);
+                });
+        }
     };
 
     if (contentTypeLoading) {
@@ -130,7 +181,7 @@ export default () => {
                         id="exportButton"
                         color="accent"
                         isDisabled={!selectedContentType || selectedProperties.length === 0 || isExporting}
-                        label={isExporting ? t('label.exporting') : t('label.exportToCSV')}
+                        label={isExporting ? t('label.exporting') : (exportFormat === 'csv' ? t('label.exportToCSV') : t('label.exportToJSON'))}
                         onClick={isExporting ? null : handleExport}
                     />
                 ]}
@@ -151,22 +202,35 @@ export default () => {
                     />
                     <div className={styles.separatorInput}>
                         <Typography variant="heading" className={styles.heading}>
-                            {t('label.separator')}
+                            {t('label.exportFormat')}
                         </Typography>
                         <Dropdown
-                            data={[
-                                {label: ';', value: ';'},
-                                {label: ',', value: ','},
-                                {label: '#', value: '#'},
-                                {label: '|', value: '|'},
-                                {label: '/', value: '/'}
-                            ]}
-                            value={csvSeparator}
-                            placeholder={t('label.separatorPlaceholder')}
+                            data={[{label: 'CSV', value: 'csv'}, {label: 'JSON', value: 'json'}]}
+                            value={exportFormat}
                             className={styles.customDropdown}
-                            onChange={(e, item) => setCsvSeparator(item.value)}
+                            onChange={(e, item) => setExportFormat(item.value)}
                         />
                     </div>
+                    {exportFormat === 'csv' && (
+                        <div className={styles.separatorInput}>
+                            <Typography variant="heading" className={styles.heading}>
+                                {t('label.separator')}
+                            </Typography>
+                            <Dropdown
+                                data={[
+                                    {label: ';', value: ';'},
+                                    {label: ',', value: ','},
+                                    {label: '#', value: '#'},
+                                    {label: '|', value: '|'},
+                                    {label: '/', value: '/'}
+                                ]}
+                                value={csvSeparator}
+                                placeholder={t('label.separatorPlaceholder')}
+                                className={styles.customDropdown}
+                                onChange={(e, item) => setCsvSeparator(item.value)}
+                            />
+                        </div>
+                    )}
                 </div>
 
                 <div className={styles.rightPanel}>
