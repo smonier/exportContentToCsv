@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useLazyQuery} from '@apollo/client';
-import {GetContentTypeQuery, GetContentPropertiesQuery, FetchContentForCSVQuery} from './ExportContent.gql-queries.js';
+import {GetContentTypeQuery, GetContentPropertiesQuery, FetchContentForCSVQuery} from '~/gql-queries/ExportContent.gql-queries';
 import {Button, Header, Dropdown, Typography} from '@jahia/moonstone';
 import styles from './ExportContent.component.scss';
 import {useTranslation} from 'react-i18next';
