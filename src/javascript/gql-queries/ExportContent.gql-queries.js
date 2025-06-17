@@ -37,11 +37,9 @@ export const FetchContentForCSVQuery = gql`
         jcr(workspace: $workspace) {
             result: nodeByPath(path: $path) {
                 ...SimpleCoreNodeFields
-                label: displayName(language: $language)
                 descendants(typesFilter: {types: [$type]}) {
                     nodes {
-                        ...SimpleCoreNodeFields
-                        label: displayName(language: $language)
+                        uuid: uuid
                         properties(names: $properties, language: $language) {
                             name
                             value
@@ -49,6 +47,17 @@ export const FetchContentForCSVQuery = gql`
                             definition {
                                 multiple
                             }
+                        }
+                        tagList: properties(names: ["j:tagList"]) {
+                            values
+                        }
+                        categoryList: property(name: "j:defaultCategory") {
+                            categories: refNodes {
+                                name: displayName(language: $language)
+                            }
+                        }
+                        interests: property(name: "wem:interests") {
+                            values
                         }
                     }
                 }
