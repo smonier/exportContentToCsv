@@ -1,4 +1,5 @@
 import {gql} from '@apollo/client';
+import {SIMPLE_CORE_NODE_FIELDS} from './fragments';
 
 export const GetContentTypeQuery = gql`
     query SiteContentTypesQuery($siteKey: String!, $language:String!) {
@@ -31,14 +32,15 @@ export const GetContentPropertiesQuery = gql`
 `;
 
 export const FetchContentForCSVQuery = gql`
+    ${SIMPLE_CORE_NODE_FIELDS}
     query getContentsByContentType($path: String!, $language: String!, $type: String!, $workspace: Workspace!, $properties: [String]) {
         jcr(workspace: $workspace) {
             result: nodeByPath(path: $path) {
-                uuid: uuid
+                ...SimpleCoreNodeFields
                 label: displayName(language: $language)
                 descendants(typesFilter: {types: [$type]}) {
                     nodes {
-                        uuid: uuid
+                        ...SimpleCoreNodeFields
                         label: displayName(language: $language)
                         properties(names: $properties, language: $language) {
                             name
