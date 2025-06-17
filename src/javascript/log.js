@@ -2,7 +2,7 @@ const isDebugEnabled = process.env.NODE_ENV !== 'production';
 
 const debug = (...args) => {
     if (isDebugEnabled) {
-        if (window?.jahia?.log?.debug) {
+        if (window?.jahia?.log?.debug && window.jahia.log.debug !== debug) {
             window.jahia.log.debug(...args);
         } else if (console.debug) {
             console.debug(...args);
@@ -13,7 +13,7 @@ const debug = (...args) => {
 };
 
 const info = (...args) => {
-    if (window?.jahia?.log?.info) {
+    if (window?.jahia?.log?.info && window.jahia.log.info !== info) {
         window.jahia.log.info(...args);
     } else if (console.info) {
         console.info(...args);
@@ -23,7 +23,7 @@ const info = (...args) => {
 };
 
 const error = (...args) => {
-    if (window?.jahia?.log?.error) {
+    if (window?.jahia?.log?.error && window.jahia.log.error !== error) {
         window.jahia.log.error(...args);
     } else {
         console.error(...args);
@@ -31,6 +31,9 @@ const error = (...args) => {
 };
 
 window.jahia = window.jahia || {};
-window.jahia.log = window.jahia.log || {debug, info, error};
+window.jahia.log = window.jahia.log || {};
+window.jahia.log.debug = window.jahia.log.debug || debug;
+window.jahia.log.info = window.jahia.log.info || info;
+window.jahia.log.error = window.jahia.log.error || error;
 
 export default {debug, info, error};
