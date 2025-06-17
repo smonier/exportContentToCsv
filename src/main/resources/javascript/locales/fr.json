@@ -6,6 +6,7 @@
     "selectContentType": "Sélectionnez un type de contenu à exporter",
     "selectProperties": "Sélectionnez les propriétés à ajouter au fichier CSV",
     "loadingContentTypes": "Chargement ...",
+    "loadingProperties": "Chargement des propriétés ...",
     "noProperties": "Sélectionnez un type de contenu pour afficher les propriétés",
     "selectPlaceholder": "Sélectionner ...",
     "exporting": "Exportation en cours ...",
