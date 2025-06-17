@@ -78,6 +78,14 @@ export const FetchContentForJSONQuery = gql`
                 ...SimpleCoreNodeFields
                 displayName(language: $language)
                 primaryNodeType { name }
+                properties(names: $properties, language: $language) {
+                    name
+                    value
+                    values
+                    definition {
+                        multiple
+                    }
+                }
                 descendants {
                     nodes {
                         uuid

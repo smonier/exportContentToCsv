@@ -146,7 +146,8 @@ export default () => {
                 variables: {
                     path: sitePath,
                     language,
-                    workspace: workspace
+                    workspace: workspace,
+                    properties: selectedProperties
                 }
             })
                 .then(response => {
