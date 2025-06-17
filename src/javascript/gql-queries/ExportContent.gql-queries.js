@@ -1,6 +1,19 @@
 import {gql} from '@apollo/client';
 import {SIMPLE_CORE_NODE_FIELDS} from './fragments';
 
+export const GetSiteLanguagesQuery = gql`
+    query GetSiteLanguages($siteKey: String!) {
+        jcr {
+            site: siteByKey(key: $siteKey) {
+                languages {
+                    language
+                    displayName
+                }
+            }
+        }
+    }
+`;
+
 export const GetContentTypeQuery = gql`
     query SiteContentTypesQuery($siteKey: String!, $language:String!) {
         jcr {
