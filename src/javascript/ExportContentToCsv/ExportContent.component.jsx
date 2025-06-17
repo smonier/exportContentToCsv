@@ -1,7 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {useLazyQuery} from '@apollo/client';
 import {GetContentTypeQuery, GetContentPropertiesQuery, FetchContentForExportQuery} from '~/gql-queries/ExportContent.gql-queries';
-import {Button, Header, Dropdown, Typography, Dialog} from '@jahia/moonstone';
+import {Button, Header, Dropdown, Typography} from '@jahia/moonstone';
+import {Dialog} from '@mui/material';
+
 import styles from './ExportContent.component.scss';
 import {useTranslation} from 'react-i18next';
 import {exportCSVFile, exportJSONFile} from './ExportContent.utils';
@@ -200,12 +202,12 @@ export default () => {
         <>
             <Dialog
                 isOpen={isPreviewOpen}
-                onClose={cancelPreview}
                 title={t('label.previewTitle')}
                 actions={[
                     {label: t('label.previewCancel'), onClick: cancelPreview},
                     {label: t('label.previewDownload'), color: 'accent', onClick: confirmDownload}
                 ]}
+                onClose={cancelPreview}
             >
                 <pre style={{maxHeight: '400px', overflow: 'auto'}}>{previewData}</pre>
             </Dialog>
