@@ -84,7 +84,13 @@ export default () => {
                 const descendants = response.data.jcr.result.descendants.nodes;
 
                 const extractedData = descendants.map(node => {
-                    const nodeData = {};
+                    const nodeData = {
+                        uuid: node.uuid,
+                        path: node.path,
+                        name: node.name,
+                        primaryNodeType: node.primaryNodeType?.name,
+                        displayName: node.displayName
+                    };
                     selectedProperties.forEach(property => {
                         const prop = node.properties.find(p => p.name === property);
                         nodeData[property] = prop ? prop.value : null;
@@ -92,7 +98,7 @@ export default () => {
                     return nodeData;
                 });
 
-                const csvHeaders = selectedProperties;
+                const csvHeaders = ['uuid', 'path', 'name', 'primaryNodeType', 'displayName', ...selectedProperties];
                 // Generate dynamic filename with content type and timestamp
                 const timestamp = new Date().toISOString().replace(/[:.-]/g, '_'); // Format the timestamp
                 const filename = `${selectedContentType}_${timestamp}`; // Example: Article_2024_11_22T10_30_45
