@@ -124,12 +124,21 @@ export default () => {
                         };
                         selectedProperties.forEach(property => {
                             const prop = node.properties.find(p => p.name === property);
-                            nodeData[property] = prop ? prop.value : null;
+                            if (prop) {
+                                nodeData[property] = prop.definition?.multiple ? prop.values : prop.value;
+                            } else {
+                                nodeData[property] = null;
+                            }
                         });
+
+                        nodeData['j:tagList'] = node.tagList?.[0]?.values || null;
+                        nodeData['j:defaultCategory'] = node.categoryList?.categories?.map(c => c.name) || null;
+                        nodeData.interests = node.interests?.values || null;
+
                         return nodeData;
                     });
 
-                    const csvHeaders = ['uuid', 'path', 'name', 'primaryNodeType', 'displayName', ...selectedProperties];
+                    const csvHeaders = ['uuid', 'path', 'name', 'primaryNodeType', 'displayName', ...selectedProperties, 'j:tagList', 'j:defaultCategory', 'interests'];
 
                     exportCSVFile(extractedData, filename, csvHeaders, csvSeparator);
                     notify('success', `${filename}.csv`);
