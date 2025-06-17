@@ -57,6 +57,7 @@ export default () => {
 
     const handleContentTypeChange = selectedType => {
         setSelectedContentType(selectedType);
+        setSelectedProperties([]); // Clear selected properties when content type changes
         fetchProperties({variables: {type: selectedType, language}});
     };
 
