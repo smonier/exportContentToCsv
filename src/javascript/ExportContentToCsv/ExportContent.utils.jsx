@@ -37,3 +37,14 @@ export const exportCSVFile = (data, filename, headers, csvSeparator) => {
     a.click();
     URL.revokeObjectURL(url);
 };
+
+export const exportJSONFile = (data, filename) => {
+    const jsonContent = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonContent], {type: 'application/json;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${filename}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+};
