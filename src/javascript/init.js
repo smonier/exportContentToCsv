@@ -1,5 +1,6 @@
 import {registry} from '@jahia/ui-extender';
 import ExportContentAction from './ExportContentToCsv';
+import log from './log';
 
 export default function () {
     window.jahia.i18n.loadNamespaces('exportContentToCsv');
@@ -15,7 +16,7 @@ export default function () {
                 render: ExportContentAction
             });
 
-            console.log('%c CSV content Export Component registered', 'color: #3c8cba');
+            log.info('%c CSV content Export Component registered', 'color: #3c8cba');
         }
     });
 }

@@ -6,6 +6,7 @@ import styles from './ExportContent.component.scss';
 import {useTranslation} from 'react-i18next';
 import {exportCSVFile} from './ExportContent.utils';
 import {extractAndFormatContentTypeData} from '~/ExportContentToCsv/ExportContent.utils';
+import log from '~/log';
 
 export default () => {
     const {t} = useTranslation('exportContentToCsv');
@@ -107,7 +108,7 @@ export default () => {
                 exportCSVFile(extractedData, filename, csvHeaders, csvSeparator);
             })
             .catch(err => {
-                console.error('Error fetching content for CSV:', err);
+                log.error('Error fetching content for CSV:', err);
             })
             .finally(() => {
                 setIsExporting(false);
