@@ -32,8 +32,14 @@ export default () => {
 
     // Fetch available languages for the site
     const [fetchSiteLanguages, {data: languagesData}] = useLazyQuery(GetSiteLanguagesQuery, {
-        variables: {siteKey},
-        fetchPolicy: 'network-only'
+        variables: {
+            workspace: workspace,
+            scope: sitePath
+        },
+        fetchPolicy: 'network-only',
+        onError: error => {
+            console.error('GetSiteLanguages error', error);
+        }
     });
 
     // Fetch all content types
@@ -68,12 +74,11 @@ export default () => {
     }, [contentTypeData]);
 
     useEffect(() => {
-        if (languagesData?.jcr?.site?.languages) {
-            const formatted = languagesData.jcr.site.languages.map(l => ({label: l.displayName || l.language, value: l.language}));
-            setLanguages(formatted);
+        if (languagesData?.jcr?.nodeByPath?.languages?.values) {
+            const langs = languagesData.jcr.nodeByPath.languages.values.map(l => ({label: l, value: l}));
+            setLanguages(langs);
         }
     }, [languagesData]);
-
     useEffect(() => {
         if (propertiesData?.jcr?.nodeTypes?.nodes?.[0]?.properties) {
             setProperties(propertiesData.jcr.nodeTypes.nodes[0].properties);
