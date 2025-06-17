@@ -37,7 +37,7 @@ export const FetchContentForCSVQuery = gql`
         jcr(workspace: $workspace) {
             result: nodeByPath(path: $path) {
                 ...SimpleCoreNodeFields
-                descendants(limit: -1, typesFilter: {types: [$type]}) {
+                descendants(typesFilter: {types: [$type]}) {
                     nodes {
                         uuid
                         path
@@ -72,13 +72,11 @@ export const FetchContentForCSVQuery = gql`
 
 export const FetchContentForJSONQuery = gql`
     ${SIMPLE_CORE_NODE_FIELDS}
-    query FetchContentForJSONQuery($path: String!, $language: String!, $workspace: Workspace!, $properties: [String]) {
+    query FetchContentForJSONQuery($path: String!, $language: String!, $type: String!, $workspace: Workspace!, $properties: [String]) {
         jcr(workspace: $workspace) {
             result: nodeByPath(path: $path) {
                 ...SimpleCoreNodeFields
-                displayName(language: $language)
-                primaryNodeType { name }
-                descendants(limit: -1) {
+                descendants(typesFilter: {types: [$type]}) {
                     nodes {
                         uuid
                         path
