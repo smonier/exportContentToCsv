@@ -2,12 +2,13 @@ import {gql} from '@apollo/client';
 import {SIMPLE_CORE_NODE_FIELDS} from './fragments';
 
 export const GetSiteLanguagesQuery = gql`
-    query GetSiteLanguages($siteKey: String!) {
-        jcr {
-            site: siteByKey(key: $siteKey) {
-                languages {
-                    language
-                    displayName
+    query GetSiteLanguages($workspace: Workspace!, $scope: String!) {
+        jcr(workspace: $workspace) {
+            nodeByPath(path: $scope) {
+                displayName
+                isDisplayableNode
+                languages: property(name: "j:languages") {
+                    values
                 }
             }
         }

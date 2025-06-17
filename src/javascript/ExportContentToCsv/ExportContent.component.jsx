@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {useLazyQuery} from '@apollo/client';
 import {GetContentTypeQuery, GetContentPropertiesQuery, FetchContentForExportQuery, GetSiteLanguagesQuery} from '~/gql-queries/ExportContent.gql-queries';
-import {Button, Header, Dropdown, Typography, Dialog} from '@jahia/moonstone';
+import {Button, Header, Dropdown, Typography} from '@jahia/moonstone';
+import {Dialog, DialogActions, DialogContent, DialogTitle} from '@material-ui/core';
 
 import styles from './ExportContent.component.scss';
 import {useTranslation} from 'react-i18next';
