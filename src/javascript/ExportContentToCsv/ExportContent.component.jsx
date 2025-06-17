@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useLazyQuery} from '@apollo/client';
-import {GetContentTypeQuery, GetContentPropertiesQuery, FetchContentForExportQuery} from '~/gql-queries/ExportContent.gql-queries';
-import {Button, Header, Dropdown, Typography} from '@jahia/moonstone';
-import {Dialog} from '@mui/material';
+import {GetContentTypeQuery, GetContentPropertiesQuery, FetchContentForExportQuery, GetSiteLanguagesQuery} from '~/gql-queries/ExportContent.gql-queries';
+import {Button, Header, Dropdown, Typography, Dialog} from '@jahia/moonstone';
 
 import styles from './ExportContent.component.scss';
 import {useTranslation} from 'react-i18next';
@@ -16,6 +15,8 @@ export default () => {
     const [selectedProperties, setSelectedProperties] = useState([]);
     const [contentTypes, setContentTypes] = useState([]);
     const [properties, setProperties] = useState([]);
+    const [languages, setLanguages] = useState([]);
+    const [selectedLanguage, setSelectedLanguage] = useState(window.contextJsParameters.uilang);
     const [isExporting, setIsExporting] = useState(false);
     const [csvSeparator, setCsvSeparator] = useState(','); // State for the CSV separator
     const [exportFormat, setExportFormat] = useState('csv');
@@ -25,13 +26,17 @@ export default () => {
     const [exportFilename, setExportFilename] = useState('');
 
     const siteKey = window.contextJsParameters.siteKey;
-    const language = window.contextJsParameters.uilang;
     const sitePath = '/sites/' + siteKey;
     const workspace = window.contextJsParameters.workspace === 'default' ? 'EDIT' : 'LIVE';
 
+    // Fetch available languages for the site
+    const [fetchSiteLanguages, {data: languagesData}] = useLazyQuery(GetSiteLanguagesQuery, {
+        variables: {siteKey},
+        fetchPolicy: 'network-only'
+    });
+
     // Fetch all content types
     const [fetchContentTypes, {data: contentTypeData, loading: contentTypeLoading}] = useLazyQuery(GetContentTypeQuery, {
-        variables: {siteKey, language},
         fetchPolicy: 'network-only'
     });
 
@@ -46,8 +51,12 @@ export default () => {
     });
 
     useEffect(() => {
-        fetchContentTypes();
-    }, [fetchContentTypes]);
+        fetchSiteLanguages();
+    }, [fetchSiteLanguages]);
+
+    useEffect(() => {
+        fetchContentTypes({variables: {siteKey, language: selectedLanguage}});
+    }, [fetchContentTypes, siteKey, selectedLanguage]);
 
     useEffect(() => {
         if (contentTypeData?.jcr?.nodeTypes?.nodes) {
@@ -58,6 +67,13 @@ export default () => {
     }, [contentTypeData]);
 
     useEffect(() => {
+        if (languagesData?.jcr?.site?.languages) {
+            const formatted = languagesData.jcr.site.languages.map(l => ({label: l.displayName || l.language, value: l.language}));
+            setLanguages(formatted);
+        }
+    }, [languagesData]);
+
+    useEffect(() => {
         if (propertiesData?.jcr?.nodeTypes?.nodes?.[0]?.properties) {
             setProperties(propertiesData.jcr.nodeTypes.nodes[0].properties);
         }
@@ -66,7 +82,7 @@ export default () => {
     const handleContentTypeChange = selectedType => {
         setSelectedContentType(selectedType);
         setSelectedProperties([]); // Clear selected properties when content type changes
-        fetchProperties({variables: {type: selectedType, language}});
+        fetchProperties({variables: {type: selectedType, language: selectedLanguage}});
     };
 
     const handlePropertyToggle = propertyName => {
@@ -132,7 +148,7 @@ export default () => {
         fetchContentForExport({
             variables: {
                 path: sitePath,
-                language,
+                language: selectedLanguage,
                 type: selectedContentType,
                 workspace: workspace,
                 properties: exportFormat === 'csv' ? selectedProperties : null
@@ -227,6 +243,16 @@ export default () => {
             />
             <div className={styles.container}>
                 <div className={styles.leftPanel}>
+                    <Typography variant="heading" className={styles.heading}>
+                        {t('label.selectLanguage')}
+                    </Typography>
+                    <Dropdown
+                        data={languages}
+                        value={selectedLanguage}
+                        className={styles.customDropdown}
+                        placeholder={t('label.selectPlaceholder')}
+                        onChange={(e, item) => setSelectedLanguage(item.value)}
+                    />
                     <Typography variant="heading" className={styles.heading}>
                         {t('label.selectContentType')}
                     </Typography>

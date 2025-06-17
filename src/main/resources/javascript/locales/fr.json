@@ -16,6 +16,7 @@
     "exportFormat": "Format d'export",
     "exportSuccess": "Fichier exporté {{filename}}",
     "exportError": "Erreur lors de l'export {{filename}}",
+    "selectLanguage": "Sélection de la langue",
     "previewTitle": "Prévisualiser l'export",
     "previewDownload": "Télécharger",
     "previewCancel": "Annuler"
