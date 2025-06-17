@@ -111,14 +111,14 @@ query GetContentPropertiesQuery($type: String!) {
   }
 }
    ```
-#### Fetch Content for CSV
+#### Fetch Content for Export
   ```bash
-query getContentsByContentType($path: String!, $language: String!, $type: String!, $workspace: Workspace!, $properties: [String]) {
+query FetchContentForExportQuery($path: String!, $language: String!, $type: String!, $workspace: Workspace!, $properties: [String]) {
     jcr(workspace: $workspace) {
         result: nodeByPath(path: $path) {
             value: uuid
             label: displayName(language: $language)
-            descendants(limit: -1, typesFilter: {types: [$type]}) {
+            descendants(typesFilter: {types: [$type]}) {
                 nodes {
                     uuid
                     path
@@ -128,13 +128,20 @@ query getContentsByContentType($path: String!, $language: String!, $type: String
                     properties(names: $properties, language: $language) {
                         name
                         value
+                        values
+                        definition { multiple }
                     }
+                    tagList: properties(names: ["j:tagList"]) { values }
+                    categoryList: property(name: "j:defaultCategory") {
+                        categories: refNodes { name: displayName(language: $language) }
+                    }
+                    interests: property(name: "wem:interests") { values }
                 }
             }
         }
     }
 }
-   ```
+  ```
 ---
 ## Contributions
 

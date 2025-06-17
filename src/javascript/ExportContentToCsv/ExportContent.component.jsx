@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useLazyQuery} from '@apollo/client';
-import {GetContentTypeQuery, GetContentPropertiesQuery, FetchContentForCSVQuery, FetchContentForJSONQuery} from '~/gql-queries/ExportContent.gql-queries';
+import {GetContentTypeQuery, GetContentPropertiesQuery, FetchContentForExportQuery} from '~/gql-queries/ExportContent.gql-queries';
 import {Button, Header, Dropdown, Typography} from '@jahia/moonstone';
 import styles from './ExportContent.component.scss';
 import {useTranslation} from 'react-i18next';
@@ -35,10 +35,7 @@ export default () => {
     });
 
     // Fetch content based on the selected type and properties
-    const [fetchContentForCSV] = useLazyQuery(FetchContentForCSVQuery, {
-        fetchPolicy: 'network-only'
-    });
-    const [fetchContentForJSON] = useLazyQuery(FetchContentForJSONQuery, {
+    const [fetchContent] = useLazyQuery(FetchContentForExportQuery, {
         fetchPolicy: 'network-only'
     });
 
@@ -102,7 +99,7 @@ export default () => {
         const filename = `${selectedContentType}_${timestamp}`;
 
         if (exportFormat === 'csv') {
-            fetchContentForCSV({
+            fetchContent({
                 variables: {
                     path: sitePath,
                     language,
@@ -151,11 +148,13 @@ export default () => {
                     setIsExporting(false);
                 });
         } else {
-            fetchContentForJSON({
+            fetchContent({
                 variables: {
                     path: sitePath,
                     language,
-                    workspace: workspace
+                    type: selectedContentType,
+                    workspace: workspace,
+                    properties: selectedProperties
                 }
             })
                 .then(response => {

@@ -31,48 +31,15 @@ export const GetContentPropertiesQuery = gql`
     }
 `;
 
-export const FetchContentForCSVQuery = gql`
+export const FetchContentForExportQuery = gql`
     ${SIMPLE_CORE_NODE_FIELDS}
-    query getContentsByContentType($path: String!, $language: String!, $type: String!, $workspace: Workspace!, $properties: [String]) {
-        jcr(workspace: $workspace) {
-            result: nodeByPath(path: $path) {
-                ...SimpleCoreNodeFields
-                descendants(typesFilter: {types: [$type]}) {
-                    nodes {
-                        uuid
-                        path
-                        name
-                        displayName(language: $language)
-                        primaryNodeType { name }
-                        properties(names: $properties, language: $language) {
-                            name
-                            value
-                            values
-                            definition {
-                                multiple
-                            }
-                        }
-                        tagList: properties(names: ["j:tagList"]) {
-                            values
-                        }
-                        categoryList: property(name: "j:defaultCategory") {
-                            categories: refNodes {
-                                name: displayName(language: $language)
-                            }
-                        }
-                        interests: property(name: "wem:interests") {
-                            values
-                        }
-                    }
-                }
-            }
-        }
-    }
-`;
-
-export const FetchContentForJSONQuery = gql`
-    ${SIMPLE_CORE_NODE_FIELDS}
-    query FetchContentForJSONQuery($path: String!, $language: String!, $type: String!, $workspace: Workspace!, $properties: [String]) {
+    query FetchContentForExportQuery(
+        $path: String!,
+        $language: String!,
+        $type: String!,
+        $workspace: Workspace!,
+        $properties: [String]
+    ) {
         jcr(workspace: $workspace) {
             result: nodeByPath(path: $path) {
                 ...SimpleCoreNodeFields
