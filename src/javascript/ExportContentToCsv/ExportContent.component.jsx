@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {useLazyQuery} from '@apollo/client';
 import {GetContentTypeQuery, GetContentPropertiesQuery, FetchContentForExportQuery} from '~/gql-queries/ExportContent.gql-queries';
-import {Button, Header, Dropdown, Typography} from '@jahia/moonstone';
+import {Button, Header, Dropdown, Typography, Dialog} from '@jahia/moonstone';
 import styles from './ExportContent.component.scss';
 import {useTranslation} from 'react-i18next';
 import {exportCSVFile, exportJSONFile} from './ExportContent.utils';
@@ -17,6 +17,10 @@ export default () => {
     const [isExporting, setIsExporting] = useState(false);
     const [csvSeparator, setCsvSeparator] = useState(','); // State for the CSV separator
     const [exportFormat, setExportFormat] = useState('csv');
+    const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+    const [previewData, setPreviewData] = useState('');
+    const [pendingExport, setPendingExport] = useState(null);
+    const [exportFilename, setExportFilename] = useState('');
 
     const siteKey = window.contextJsParameters.siteKey;
     const language = window.contextJsParameters.uilang;
@@ -93,10 +97,35 @@ export default () => {
         return map[rootNode.path];
     };
 
+    const confirmDownload = () => {
+        if (!pendingExport) {
+            return;
+        }
+
+        if (pendingExport.type === 'csv') {
+            exportCSVFile(pendingExport.data, exportFilename, pendingExport.headers, pendingExport.separator);
+            notify('success', `${exportFilename}.csv`);
+        } else {
+            exportJSONFile(pendingExport.data, exportFilename);
+            notify('success', `${exportFilename}.json`);
+        }
+
+        setIsPreviewOpen(false);
+        setPreviewData('');
+        setPendingExport(null);
+    };
+
+    const cancelPreview = () => {
+        setIsPreviewOpen(false);
+        setPreviewData('');
+        setPendingExport(null);
+    };
+
     const handleExport = () => {
         setIsExporting(true);
         const timestamp = new Date().toISOString().replace(/[:.-]/g, '_');
         const filename = `${selectedContentType}_${timestamp}`;
+        setExportFilename(filename);
 
         fetchContentForExport({
             variables: {
@@ -139,12 +168,19 @@ export default () => {
 
                     const csvHeaders = ['uuid', 'path', 'name', 'primaryNodeType', 'displayName', ...selectedProperties, 'j:tagList', 'j:defaultCategory', 'interests'];
 
-                    exportCSVFile(extractedData, filename, csvHeaders, csvSeparator);
-                    notify('success', `${filename}.csv`);
+                    const csvHeaderRow = csvHeaders.join(csvSeparator);
+                    const csvRows = extractedData.map(row =>
+                        csvHeaders.map(header => `"${String(row[header] || '').replace(/"/g, '""')}"`).join(csvSeparator)
+                    );
+                    const csvContent = [csvHeaderRow, ...csvRows].join('\n');
+                    setPendingExport({type: 'csv', data: extractedData, headers: csvHeaders, separator: csvSeparator});
+                    setPreviewData(csvContent);
+                    setIsPreviewOpen(true);
                 } else {
                     const tree = buildTree(rootNode, descendants);
-                    exportJSONFile(tree, filename);
-                    notify('success', `${filename}.json`);
+                    setPendingExport({type: 'json', data: tree});
+                    setPreviewData(JSON.stringify(tree, null, 2));
+                    setIsPreviewOpen(true);
                 }
             })
             .catch(err => {
@@ -162,6 +198,17 @@ export default () => {
 
     return (
         <>
+            <Dialog
+                isOpen={isPreviewOpen}
+                onClose={cancelPreview}
+                title={t('label.previewTitle')}
+                actions={[
+                    {label: t('label.previewCancel'), onClick: cancelPreview},
+                    {label: t('label.previewDownload'), color: 'accent', onClick: confirmDownload}
+                ]}
+            >
+                <pre style={{maxHeight: '400px', overflow: 'auto'}}>{previewData}</pre>
+            </Dialog>
             <Header
                 title={t('label.header', {siteInfo: siteKey})}
                 mainActions={[
