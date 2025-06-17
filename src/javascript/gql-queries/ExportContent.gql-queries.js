@@ -39,7 +39,11 @@ export const FetchContentForCSVQuery = gql`
                 ...SimpleCoreNodeFields
                 descendants(typesFilter: {types: [$type]}) {
                     nodes {
-                        uuid: uuid
+                        uuid
+                        path
+                        name
+                        displayName(language: $language)
+                        primaryNodeType { name }
                         properties(names: $properties, language: $language) {
                             name
                             value
@@ -59,6 +63,28 @@ export const FetchContentForCSVQuery = gql`
                         interests: property(name: "wem:interests") {
                             values
                         }
+                    }
+                }
+            }
+        }
+    }
+`;
+
+export const FetchContentForJSONQuery = gql`
+    ${SIMPLE_CORE_NODE_FIELDS}
+    query FetchContentForJSONQuery($path: String!, $language: String!, $workspace: Workspace!) {
+        jcr(workspace: $workspace) {
+            result: nodeByPath(path: $path) {
+                ...SimpleCoreNodeFields
+                displayName(language: $language)
+                primaryNodeType { name }
+                descendants {
+                    nodes {
+                        uuid
+                        path
+                        name
+                        displayName(language: $language)
+                        primaryNodeType { name }
                     }
                 }
             }

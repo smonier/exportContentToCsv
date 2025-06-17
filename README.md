@@ -120,8 +120,11 @@ query getContentsByContentType($path: String!, $language: String!, $type: String
             label: displayName(language: $language)
             descendants(typesFilter: {types: [$type]}) {
                 nodes {
-                    value: uuid
-                    label: displayName(language: $language)
+                    uuid
+                    path
+                    name
+                    displayName(language: $language)
+                    primaryNodeType { name }
                     properties(names: $properties, language: $language) {
                         name
                         value
