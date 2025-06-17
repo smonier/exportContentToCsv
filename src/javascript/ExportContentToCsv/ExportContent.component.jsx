@@ -154,7 +154,7 @@ export default () => {
                     language,
                     type: selectedContentType,
                     workspace: workspace,
-                    properties: selectedProperties
+                    properties: null
                 }
             })
                 .then(response => {
@@ -188,7 +188,7 @@ export default () => {
                         size="big"
                         id="exportButton"
                         color="accent"
-                        isDisabled={!selectedContentType || selectedProperties.length === 0 || isExporting}
+                        isDisabled={!selectedContentType || (exportFormat === 'csv' && selectedProperties.length === 0) || isExporting}
                         label={isExporting ? t('label.exporting') : (exportFormat === 'csv' ? t('label.exportToCSV') : t('label.exportToJSON'))}
                         onClick={isExporting ? null : handleExport}
                     />
