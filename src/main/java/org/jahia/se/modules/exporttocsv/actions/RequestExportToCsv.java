@@ -67,11 +67,9 @@ public class RequestExportToCsv extends Action {
         OutputStream outputStream = null;
 
         String contentTypeToExport = null;
-        if (parameters.containsKey(contentTypeToExport) && !parameters.get(contentTypeToExport).isEmpty()) {
-            contentTypeToExport = parameters.get(contentTypeToExport).get(0);
+        if (parameters.containsKey("contentTypeToExport") && !parameters.get("contentTypeToExport").isEmpty()) {
+            contentTypeToExport = parameters.get("contentTypeToExport").get(0);
         }
-
-        String startingNodePath = resource.getNodePath();
 
         try {
             outputStream = response.getOutputStream();
