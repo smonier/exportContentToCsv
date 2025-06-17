@@ -32,7 +32,7 @@ export default () => {
 
     // Fetch available languages for the site
     const [fetchSiteLanguages, {data: languagesData}] = useLazyQuery(GetSiteLanguagesQuery, {
-        variables: {siteKey},
+        variables: {workspace, scope: sitePath},
         fetchPolicy: 'network-only'
     });
 
@@ -68,8 +68,8 @@ export default () => {
     }, [contentTypeData]);
 
     useEffect(() => {
-        if (languagesData?.jcr?.site?.languages) {
-            const formatted = languagesData.jcr.site.languages.map(l => ({label: l.displayName || l.language, value: l.language}));
+        if (languagesData?.jcr?.nodeByPath?.languages?.values) {
+            const formatted = languagesData.jcr.nodeByPath.languages.values.map(l => ({label: l, value: l}));
             setLanguages(formatted);
         }
     }, [languagesData]);
