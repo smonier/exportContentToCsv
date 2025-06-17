@@ -15,6 +15,9 @@
     "exportToJSON": "Exporter en JSON",
     "exportFormat": "Format d'export",
     "exportSuccess": "Fichier exporté {{filename}}",
-    "exportError": "Erreur lors de l'export {{filename}}"
+    "exportError": "Erreur lors de l'export {{filename}}",
+    "previewTitle": "Prévisualiser l'export",
+    "previewDownload": "Télécharger",
+    "previewCancel": "Annuler"
   }
 }
