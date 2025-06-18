@@ -1,7 +1,7 @@
 {
   "label": {
     "buttonAction": "Exporter en CSV",
-    "header": "Exporter le contenu en CSV - Site {{siteInfo}}",
+    "header": "Exporter le contenu JCR - Site {{siteInfo}}",
     "exportToCSV": "Exporter en CSV",
     "selectContentType": "Sélectionnez un type de contenu à exporter",
     "selectProperties": "Sélectionnez les propriétés à ajouter au fichier CSV",
