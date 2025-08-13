@@ -168,10 +168,28 @@ export default () => {
                             }
                         });
 
+                        const tagValues = node.tagList?.[0]?.values || node.tagList?.values;
+                        nodeData['j:tagList'] = tagValues || null;
+
+                        const categories = node.categoryList?.categories ? node.categoryList.categories.map(c => c.name) : null;
+                        nodeData['j:defaultCategory'] = categories;
+
+                        const interests = node.interests?.values || null;
+                        nodeData['wem:interests'] = interests;
+
                         return nodeData;
                     });
 
-                    const csvHeaders = ['uuid', 'path', 'name', 'primaryNodeType', ...selectedProperties];
+                    const csvHeaders = [
+                        'uuid',
+                        'path',
+                        'name',
+                        'primaryNodeType',
+                        ...selectedProperties,
+                        'j:tagList',
+                        'j:defaultCategory',
+                        'wem:interests'
+                    ];
 
                     const csvHeaderRow = csvHeaders.join(csvSeparator);
                     const csvRows = extractedData.map(row =>
