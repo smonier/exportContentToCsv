@@ -69,6 +69,17 @@ export const FetchContentForExportQuery = gql`
                                 multiple
                             }
                         }
+                        tagList: property(name: "j:tagList") {
+                            values
+                        }
+                        categoryList {
+                            categories {
+                                name
+                            }
+                        }
+                        interests: property(name: "wem:interests") {
+                            values
+                        }
                     }
                 }
             }
