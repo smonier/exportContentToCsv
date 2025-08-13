@@ -123,7 +123,6 @@ query FetchContentForExportQuery($path: String!, $language: String!, $type: Stri
                     uuid
                     path
                     name
-                    displayName(language: $language)
                     primaryNodeType { name }
                     properties(names: $properties, language: $language) {
                         name
@@ -131,11 +130,6 @@ query FetchContentForExportQuery($path: String!, $language: String!, $type: Stri
                         values
                         definition { multiple }
                     }
-                    tagList: properties(names: ["j:tagList"]) { values }
-                    categoryList: property(name: "j:defaultCategory") {
-                        categories: refNodes { name: displayName(language: $language) }
-                    }
-                    interests: property(name: "wem:interests") { values }
                 }
             }
         }

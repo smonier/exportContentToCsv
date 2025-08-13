@@ -16,7 +16,6 @@ export const extractAndFormatContentTypeData = data => {
     return contentTypeSelectData;
 };
 
-
 export const exportCSVFile = (data, filename, headers, csvSeparator) => {
     // Construct the CSV header row
     const csvHeaderRow = headers.join(csvSeparator);
@@ -57,27 +56,11 @@ export const sanitizeContentNodes = nodes => nodes.map(node => {
         primaryNodeType: node.primaryNodeType?.name
     };
 
-    const properties = {};
-
     if (Array.isArray(node.properties)) {
         node.properties.forEach(prop => {
-            properties[prop.name] = prop.definition?.multiple ? prop.values : prop.value;
+            sanitized[prop.name] = prop.definition?.multiple ? prop.values : prop.value;
         });
     }
-
-    if (node.tagList?.[0]?.values) {
-        properties['j:tagList'] = node.tagList[0].values;
-    }
-
-    if (node.categoryList?.categories) {
-        properties['j:defaultCategory'] = node.categoryList.categories.map(c => c.name);
-    }
-
-    if (node.interests?.values) {
-        properties['wem:interests'] = node.interests.values;
-    }
-
-    sanitized.properties = properties;
 
     return sanitized;
 });
