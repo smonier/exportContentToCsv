@@ -56,11 +56,27 @@ export const sanitizeContentNodes = nodes => nodes.map(node => {
         primaryNodeType: node.primaryNodeType?.name
     };
 
+    const properties = {};
     if (Array.isArray(node.properties)) {
         node.properties.forEach(prop => {
-            sanitized[prop.name] = prop.definition?.multiple ? prop.values : prop.value;
+            properties[prop.name] = prop.definition?.multiple ? prop.values : prop.value;
         });
     }
+
+    const tagValues = node.tagList?.[0]?.values || node.tagList?.values;
+    if (tagValues) {
+        properties['j:tagList'] = tagValues;
+    }
+
+    if (node.categoryList?.categories) {
+        properties['j:defaultCategory'] = node.categoryList.categories.map(c => c.name);
+    }
+
+    if (node.interests?.values) {
+        properties['wem:interests'] = node.interests.values;
+    }
+
+    sanitized.properties = properties;
 
     return sanitized;
 });
