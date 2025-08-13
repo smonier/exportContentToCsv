@@ -6,7 +6,7 @@ import {Dialog, DialogActions, DialogContent, DialogTitle} from '@material-ui/co
 
 import styles from './ExportContent.component.scss';
 import {useTranslation} from 'react-i18next';
-import {exportCSVFile, exportJSONFile} from './ExportContent.utils';
+import {exportCSVFile, exportJSONFile, sanitizeContentNodes} from './ExportContent.utils';
 import {extractAndFormatContentTypeData} from '~/ExportContentToCsv/ExportContent.utils';
 import log from '~/log';
 
@@ -107,20 +107,6 @@ export default () => {
         }
     };
 
-    const buildTree = (rootNode, nodes) => {
-        const map = {};
-        [...nodes, rootNode].forEach(n => {
-            map[n.path] = {...n, children: []};
-        });
-        Object.values(map).forEach(n => {
-            const parentPath = n.path.substring(0, n.path.lastIndexOf('/'));
-            if (map[parentPath] && parentPath !== n.path) {
-                map[parentPath].children.push(n);
-            }
-        });
-        return map[rootNode.path];
-    };
-
     const confirmDownload = () => {
         if (!pendingExport) {
             return;
@@ -161,8 +147,7 @@ export default () => {
             }
         })
             .then(response => {
-                const rootNode = response.data.jcr.result;
-                const descendants = rootNode.descendants.nodes;
+                const descendants = response.data.jcr.result.descendants.nodes;
 
                 if (exportFormat === 'csv') {
                     const extractedData = descendants.map(node => {
@@ -201,9 +186,9 @@ export default () => {
                     setPreviewData(csvContent);
                     setIsPreviewOpen(true);
                 } else {
-                    const tree = buildTree(rootNode, descendants);
-                    setPendingExport({type: 'json', data: tree});
-                    setPreviewData(JSON.stringify(tree, null, 2));
+                    const jsonData = sanitizeContentNodes(descendants);
+                    setPendingExport({type: 'json', data: jsonData});
+                    setPreviewData(JSON.stringify(jsonData, null, 2));
                     setIsPreviewOpen(true);
                 }
             })
