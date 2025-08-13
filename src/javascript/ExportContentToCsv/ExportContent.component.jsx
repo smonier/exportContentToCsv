@@ -103,6 +103,7 @@ export default () => {
         if (window?.jahia?.ui?.notify) {
             window.jahia.ui.notify(type, null, message);
         } else {
+            // eslint-disable-next-line no-alert
             alert(message);
         }
     };
@@ -143,7 +144,7 @@ export default () => {
                 language: selectedLanguage,
                 type: selectedContentType,
                 workspace: workspace,
-                properties: exportFormat === 'csv' ? selectedProperties : null
+                properties: selectedProperties
             }
         })
             .then(response => {
@@ -155,8 +156,7 @@ export default () => {
                             uuid: node.uuid,
                             path: node.path,
                             name: node.name,
-                            primaryNodeType: node.primaryNodeType?.name,
-                            displayName: node.displayName
+                            primaryNodeType: node.primaryNodeType?.name
                         };
 
                         selectedProperties.forEach(property => {
@@ -168,14 +168,10 @@ export default () => {
                             }
                         });
 
-                        nodeData['j:tagList'] = node.tagList?.[0]?.values || null;
-                        nodeData['j:defaultCategory'] = node.categoryList?.categories?.map(c => c.name) || null;
-                        nodeData.interests = node.interests?.values || null;
-
                         return nodeData;
                     });
 
-                    const csvHeaders = ['uuid', 'path', 'name', 'primaryNodeType', 'displayName', ...selectedProperties, 'j:tagList', 'j:defaultCategory', 'interests'];
+                    const csvHeaders = ['uuid', 'path', 'name', 'primaryNodeType', ...selectedProperties];
 
                     const csvHeaderRow = csvHeaders.join(csvSeparator);
                     const csvRows = extractedData.map(row =>

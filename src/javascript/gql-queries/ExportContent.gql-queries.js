@@ -60,7 +60,6 @@ export const FetchContentForExportQuery = gql`
                 descendants(typesFilter: {types: [$type]}) {
                     nodes {
                         ...SimpleCoreNodeFields
-                        displayName(language: $language)
                         primaryNodeType { name }
                         properties(names: $properties, language: $language) {
                             name
@@ -69,17 +68,6 @@ export const FetchContentForExportQuery = gql`
                             definition {
                                 multiple
                             }
-                        }
-                        tagList: properties(names: ["j:tagList"]) {
-                            values
-                        }
-                        categoryList: property(name: "j:defaultCategory") {
-                            categories: refNodes {
-                                name: displayName(language: $language)
-                            }
-                        }
-                        interests: property(name: "wem:interests") {
-                            values
                         }
                     }
                 }
