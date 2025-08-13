@@ -74,6 +74,10 @@ export const FetchContentForExportQuery = gql`
                             categories: refNodes { name: displayName(language: $language) }
                         }
                         interests: property(name: "wem:interests") { values }
+                        vanityUrls {
+                            language
+                            url
+                        }
                     }
                 }
             }
