@@ -21,5 +21,8 @@
     "previewTitle": "Preview export",
     "previewDownload": "Download",
     "previewCancel": "Cancel"
+  },
+  "accordion": {
+    "title": "Content Tools"
   }
 }

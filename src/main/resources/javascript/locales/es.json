@@ -21,5 +21,8 @@
     "previewTitle": "Vista previa de la exportación",
     "previewDownload": "Descargar",
     "previewCancel": "Cancelar"
+  },
+  "accordion": {
+    "title": "Herramientas de contenido"
   }
 }
