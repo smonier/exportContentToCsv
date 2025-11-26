@@ -6,7 +6,7 @@ The **Export Content to CSV** module is a feature designed for Jahia's back-offi
 
 ## Features
 
-- Add a new entry to the Jahia back-office menu after module deployment and activation.
+- Add a new entry under the **Content Tools** menu in Jahia's back-office after module deployment and activation.
 - Select any deployed content type from a dropdown menu.
 - View and select the properties associated with the selected content type.
 - Export the selected properties of the chosen content type to a CSV file.
@@ -37,7 +37,7 @@ Activate the module on the desired site.
 
 1. Open the Module
 
-After deploying and activating the module, you will find a new entry in the Extensions menu of Jahia’s back-office.
+After deploying and activating the module, you will find a new entry under **Content Tools** in Jahia’s back-office.
 
 2. Specify the CSV file separator
 
@@ -155,4 +155,3 @@ This module is licensed under the MIT License.
 ---
 ## Screenshots
 ![picture](./src/main/resources/img/exportContentToCsv.gif)
-
